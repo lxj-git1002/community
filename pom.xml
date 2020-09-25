@@ -49,6 +49,12 @@
 			<version>8.0.20</version>
 		</dependency>
 
+		<dependency>
+			<groupId>name.remal.tools.test</groupId>
+			<artifactId>junit4</artifactId>
+			<version>1.26.130</version>
+		</dependency>
+
 <!--		mybatis-->
 		<dependency>
 			<groupId>org.mybatis.spring.boot</groupId>
