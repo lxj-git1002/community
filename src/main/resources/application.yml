@@ -1,0 +1,36 @@
+#  tomcat
+server:
+  port: 8088
+#
+  servlet:
+    context-path: /community
+
+#  Thymeleafproperties
+spring:
+  thymeleaf:
+    cache: false
+
+#  DataSourceProperties
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/community?characterEncoding=utf-8&useSSL=false&serverTimezone=Hongkong
+    username: root
+    password: 10021002
+    type: com.zaxxer.hikari.HikariDataSource
+    hikari:
+      maximum-pool-size: 30
+      minimum-idle: 10
+      idle-timeout: 30000
+
+#   MybatisProperties
+mybatis:
+  mapper-locations: classpath:mapper/*Mapper.xml
+#  指定了实体类的位置，所以在mapper.xml文件中就可以不用谢包名了。
+  type-aliases-package: com.project.community.entity
+  configuration:
+    use-generated-keys: true
+    map-underscore-to-camel-case: true
+
+#logger
+#logging:
+#  level: debug
