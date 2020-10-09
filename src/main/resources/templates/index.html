@@ -141,24 +141,30 @@
 					</li>
 				</ul>
 				<!-- 分页 -->
-<!--				<nav class="mt-5" th:if="${page.rows>0}">-->
-<!--					<ul class="pagination justify-content-center">-->
-<!--						<li class="page-item">-->
-<!--							<a class="page-link" th:href="@{${page.path}(current=1)}">首页</a>-->
-<!--						</li>-->
-<!--						<li th:class="|page-item ${page.current==1?'disabled':''}|">-->
-<!--							<a class="page-link" th:href="@{${page.path}(current=${page.current-1})}">上一页</a></li>-->
-<!--						<li th:class="|page-item ${i==page.current?'active':''}|" th:each="i:${#numbers.sequence(page.from,page.to)}">-->
-<!--							<a class="page-link" href="#" th:text="${i}">1</a>-->
-<!--						</li>-->
-<!--						<li th:class="|page-item ${page.current==page.total?'disabled':''}|">-->
-<!--							<a class="page-link" th:href="@{${page.path}(current=${page.current+1})}">下一页</a>-->
-<!--						</li>-->
-<!--						<li class="page-item">-->
-<!--							<a class="page-link" th:href="@{${page.path}(current=${page.total})}">末页</a>-->
-<!--						</li>-->
-<!--					</ul>-->
-<!--				</nav>-->
+<!--				没有数据的时候不显示分页，添加一个if判断-->
+				<nav class="mt-5" th:if="${page.rows>0}">
+					<ul class="pagination justify-content-center">
+						<li class="page-item">
+							<a class="page-link" th:href="@{${page.path}(current=1)}">首页</a>
+						</li>
+<!--						如果当前页面是第一页则上一页不可以点，disabled。否则可以点。
+                            page-item是一个静态的值，page.current是一个变量，通过||将他们拼接起来 -->
+						<li th:class="|page-item ${page.current==1?'disabled':''}|">
+							<a class="page-link" th:href="@{${page.path}(current=${page.current-1})}">上一页</a></li>
+<!--						循环显示可以显示的页面，比如当前页是2则显示1 2 3 4-->
+<!--						对于当前页面进行高亮显示active-->
+						<li th:class="|page-item ${i==page.current?'active':''}|" th:each="i:${#numbers.sequence(page.from,page.to)}">
+<!--							点击页码跳转-->
+							<a class="page-link" th:href="@{${page.path}(current=${i})}" th:text="${i}">1</a>
+						</li>
+						<li th:class="|page-item ${page.current==page.total?'disabled':''}|">
+							<a class="page-link" th:href="@{${page.path}(current=${page.current+1})}">下一页</a>
+						</li>
+						<li class="page-item">
+							<a class="page-link" th:href="@{${page.path}(current=${page.total})}">末页</a>
+						</li>
+					</ul>
+				</nav>
 			</div>
 		</div>
 

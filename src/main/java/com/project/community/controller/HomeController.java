@@ -1,6 +1,7 @@
 package com.project.community.controller;
 
 import com.project.community.entity.DiscussPost;
+import com.project.community.entity.Page;
 import com.project.community.entity.User;
 import com.project.community.service.DiscussPostService;
 import com.project.community.service.UserService;
@@ -25,9 +26,15 @@ public class HomeController {
     private UserService userService;
 
     @RequestMapping(path = "/index",method = RequestMethod.GET)//访问首页，并且访问方式为get
-    public String getIndexPage(Model model)//返回的是视图的名称
+    public String getIndexPage(Model model,Page page)//返回的是视图的名称
     {
-        List<DiscussPost> posts = discussPostService.findDiscussPosts(0, 0, 3);
+        //方法调用前，springmvc会自动调用，来实例化Model和Page，并且将page注入到Model中，所以在thymeleaf中可以直接访问page对象中的数据了。
+
+        //服务器设置初始值
+        page.setRows(discussPostService.findDiscussPostRows(0));//传入的参数为0，表示所有的帖子
+        page.setPath("/index");//当前的访问路径,其他页面也复用这个路径
+
+        List<DiscussPost> posts = discussPostService.findDiscussPosts(0, page.getOffset(), page.getLimit());
         List<Map<String, Object>> discussPosts = new ArrayList<>();
         if (posts != null) {
             for (DiscussPost post : posts) {

@@ -35,6 +35,12 @@ mybatis:
     map-underscore-to-camel-case: true
 
 
-#logger
+#logger 启动日志的级别
 #logging:
-#  level: debug
+#  pattern:
+#    console: "%d - %msg%n"  #定义打印的日志格式
+#  level:
+#    root: debug
+#  file:
+#    name: I:/code/java/project/loggingfile/community_log_file.log #保存日志的文件
+
