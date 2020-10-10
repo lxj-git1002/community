@@ -15,9 +15,9 @@ import java.util.Map;
 public class HelloTest {
 
     /*
-    * 处理请求
-    * ResponseBody表示服务器响应的是一个简单的数据
-    * */
+     * 处理请求
+     * ResponseBody表示服务器响应的是一个简单的数据
+     * */
 
     @RequestMapping("/hello")
     @ResponseBody
@@ -30,7 +30,7 @@ public class HelloTest {
     @RequestMapping(path = "test",method = RequestMethod.GET)
     @ResponseBody
     public String test(@RequestParam(name = "cur",required = false,defaultValue = "1") int cur,
-                     @RequestParam(name = "limit",required = false,defaultValue = "10") int limit)
+                       @RequestParam(name = "limit",required = false,defaultValue = "10") int limit)
     {
         System.out.println(cur);
         System.out.println(limit);
@@ -57,8 +57,8 @@ public class HelloTest {
     }
 
     /*
-    * 向浏览器返回响应数据
-    * */
+     * 向浏览器返回响应数据
+     * */
 
     //向浏览器响应动态的html
     @RequestMapping(path = "/test3",method = RequestMethod.GET)

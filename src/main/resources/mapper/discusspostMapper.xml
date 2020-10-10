@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.project.community.dao.DiscussPostMapper">
+    <sql id="selectFields">
+        id, user_id, title, content, type, status, create_time, comment_count, score,tag
+    </sql>
+
+    <select id="selectDiscussPosts" resultType="DiscussPost">
+        select <include refid="selectFields"></include>
+        from discuss_post
+        where status!=2 <!--这里表示的是拉黑的帖不能显示-->
+        <!--添加动态sql，如果userid不为0则添加查询条件-->
+        <if test="userId!=0">
+            and user_id=#{userId}
+        </if>
+        <!--对查询到的结果进行一个排序-->
+        order by type desc,create_time desc <!--根据帖子类型进行倒叙排序，就是当type为1的时候排序在前，即为将置顶的显示在前面。其次按照创建时间倒叙。将创建最新的排序在前面-->
+        limit #{offset},#{limit} <!--分页显示，第一个是起始，limit是这一页最多显示多少数据-->
+    </select>
+    
+    <select id="selectDiscussPostRows" resultType="int">
+        select count(id)
+        from discuss_post
+        where status!=2
+        <if test="userId!=0">
+            and user_id=#{userId}
+        </if>
+
+    </select>
+</mapper>
