@@ -61,6 +61,12 @@ mybatis:
     use-generated-keys: true
     map-underscore-to-camel-case: true
 
+# community配置域名
+community:
+  path:
+    domain: http://localhost:8080
+
+
 
 #logger 启动日志的级别
 #logging:
