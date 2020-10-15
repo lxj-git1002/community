@@ -25,6 +25,7 @@ public class UserServiceImpl implements UserService {
     private MailClient mailClient;
 
     //注入模板引擎
+    @Autowired
     private TemplateEngine templateEngine;
 
     @Autowired
@@ -102,8 +103,15 @@ public class UserServiceImpl implements UserService {
         context.setVariable("email",user.getEmail());//将邮件发送给用户user的邮箱
         //设置url，希望服务器用什么路径处理这个请求。
         //路径为：
+        // http://localhost:8088/community/activation激活的功能/101user的id/code激活码
+        String url=domain+contextPath+"/activation/"+user.getId()+"/"+user.getActivationCode();
+        context.setVariable("url",url);
 
-
+        //有了context后就可以用模板引擎生成邮件内容
+        String email = templateEngine.process("/mail/activation", context);
+        //调用mailClient的send函数发送邮件
+        mailClient.sendMail(user.getEmail(),"激活邮件",email);
+        //注册成功则map为空
 
         return map;
     }

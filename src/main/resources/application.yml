@@ -58,13 +58,13 @@ mybatis:
   #  指定了实体类的位置，所以在mapper.xml文件中就可以不用谢包名了。
   type-aliases-package: com.project.community.entity
   configuration:
-    use-generated-keys: true
+    use-generated-keys: true #自动生成id的机制。所以在执行insert插入user的时候会自动生成userid。
     map-underscore-to-camel-case: true
 
 # community配置域名
 community:
   path:
-    domain: http://localhost:8080
+    domain: http://localhost:8088
 
 
 
