@@ -3,6 +3,7 @@ package com.project.community.service.impl;
 import com.project.community.dao.UserMapper;
 import com.project.community.entity.User;
 import com.project.community.service.UserService;
+import com.project.community.util.CommunityConstant;
 import com.project.community.util.CommunityUtil;
 import com.project.community.util.MailClient;
 import org.apache.commons.lang3.StringUtils;
@@ -18,7 +19,7 @@ import java.util.Map;
 import java.util.Random;
 
 @Service
-public class UserServiceImpl implements UserService {
+public class UserServiceImpl implements UserService , CommunityConstant {
 
     //注入邮件客户端
     @Autowired
@@ -98,7 +99,7 @@ public class UserServiceImpl implements UserService {
         //将user插入到数据库中
         userMapper.insertUser(user);
 
-        //激活邮件
+        //发送激活邮件
         Context context = new Context();//创建一个context对象，通过这个对象携带变量
         context.setVariable("email",user.getEmail());//将邮件发送给用户user的邮箱
         //设置url，希望服务器用什么路径处理这个请求。
@@ -115,4 +116,28 @@ public class UserServiceImpl implements UserService {
 
         return map;
     }
+
+    //激活账号
+    public int activation(int userId,String code)//参数是用户id和激活码
+    {
+        //通过userid查询到用户
+        User user = userMapper.selectById(userId);
+
+        //判断当前用户是否已经激活
+        if (user.getStatus()==1)//重复激活
+            return ACTIVATION_REPEAT;
+
+        //判断user中的激活码和参数中的激活码是否相同
+        else if (user.getActivationCode().equals(code))
+        {
+            //修改用户的激活状态
+            userMapper.updateStatus(userId,1);
+            return ACTIVATION_SUCCESS;
+        }
+
+        //激活码不同
+        else
+            return ACTIVATION_FAILURE;
+    }
+
 }
