@@ -85,6 +85,13 @@
 			<artifactId>commons-lang3</artifactId>
 		</dependency>
 
+<!--		生成验证码的包 kaptcha-->
+		<dependency>
+			<groupId>com.github.penggle</groupId>
+			<artifactId>kaptcha</artifactId>
+			<version>2.3.2</version>
+		</dependency>
+
 	</dependencies>
 
 	<build>

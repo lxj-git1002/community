@@ -28,7 +28,8 @@ public class HomeController {
     @RequestMapping(path = "/index",method = RequestMethod.GET)//访问首页，并且访问方式为get
     public String getIndexPage(Model model,Page page)//返回的是视图的名称
     {
-        //方法调用前，springmvc会自动调用，来实例化Model和Page，并且将page注入到Model中，所以在thymeleaf中可以直接访问page对象中的数据了。
+        //方法调用前，springmvc会自动调用，来实例化Model和Page，并且将page注入到Model中，
+        // 所以在thymeleaf中可以直接访问page对象中的数据了。
 
         //服务器设置初始值
         page.setRows(discussPostService.findDiscussPostRows(0));//传入的参数为0，表示所有的帖子
