@@ -1,8 +1,10 @@
 package com.project.community;
 
 import com.project.community.dao.DiscussPostMapper;
+import com.project.community.dao.LoginTicketMapper;
 import com.project.community.dao.UserMapper;
 import com.project.community.entity.DiscussPost;
+import com.project.community.entity.LoginTicket;
 import com.project.community.entity.User;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -73,5 +75,27 @@ public class MapperTest {
         }
         int rows = discussPostMapper.selectDiscussPostRows(0);
         System.out.println(rows);
+    }
+
+    @Autowired
+    private LoginTicketMapper loginTicketMapper;
+
+    @Test
+    public void test5()
+    {
+        LoginTicket ticket = new LoginTicket();
+        ticket.setUserId(101);
+        ticket.setExpired(new Date(System.currentTimeMillis()+1000));
+        ticket.setStatus(0);
+        ticket.setTicket("111");
+        loginTicketMapper.insertTicket(ticket);
+    }
+
+    @Test
+    public void test6()
+    {
+        LoginTicket loginTicket = loginTicketMapper.selectByTicket("111");
+        System.out.println(loginTicket);
+        int i = loginTicketMapper.updateStatus("111", 1);
     }
 }

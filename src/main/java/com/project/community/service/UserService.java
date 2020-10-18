@@ -10,4 +10,10 @@ public interface UserService  {
 
     //返回注册的结果，需要的参数为一个user对象
     public Map<String,Object> register(User user);
+
+    //登录
+    public Map<String,Object> login(String username,String password,int expiredSeconds);
+
+    //退出
+    public void logOut(String ticket);
 }

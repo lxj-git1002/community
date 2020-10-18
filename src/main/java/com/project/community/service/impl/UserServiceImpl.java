@@ -1,6 +1,8 @@
 package com.project.community.service.impl;
 
+import com.project.community.dao.LoginTicketMapper;
 import com.project.community.dao.UserMapper;
+import com.project.community.entity.LoginTicket;
 import com.project.community.entity.User;
 import com.project.community.service.UserService;
 import com.project.community.util.CommunityConstant;
@@ -10,6 +12,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.web.servlet.handler.UserRoleAuthorizationInterceptor;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
 
@@ -31,6 +34,9 @@ public class UserServiceImpl implements UserService , CommunityConstant {
 
     @Autowired
     private UserMapper userMapper;
+
+    @Autowired
+    private LoginTicketMapper loginTicketMapper;
 
     //注册的时候发邮件要生成一个激活码，激活码中要包含域名以及项目名。
     //注入
@@ -140,4 +146,65 @@ public class UserServiceImpl implements UserService , CommunityConstant {
             return ACTIVATION_FAILURE;
     }
 
+    //登录功能
+    @Override
+    public Map<String, Object> login(String username, String password, int expiredSeconds) {
+
+        HashMap<String, Object> map = new HashMap<>();
+
+        //空值处理
+        if (StringUtils.isBlank(username))
+        {
+            map.put("usernameMsg","账号不能为空");
+            return map;
+        }
+        if (StringUtils.isBlank(password))
+        {
+            map.put("passwordMsg","密码不能为空");
+            return map;
+        }
+
+        //检验是否合法
+        //根据传入的数据从数据库查询，看是否有响应的用户，如果有并且传入的值和数据库的值相等则是合法的
+        User user = userMapper.selectByName(username);
+        if (user==null)
+        {
+            map.put("usernameMsg","账号错误❌");
+            return map;
+        }
+        //如果user不为空则判断当查询到的用户user是否已经激活了
+        if (user.getStatus()==0)
+        {
+            map.put("usernameMsg","账号没有激活，快去邮箱激活吧😊");
+            return map;
+        }
+        //如果用户存在，并且激活了，则此时判断密码是否正确
+        //将传入的明文密码进行加密
+        password  = CommunityUtil.MD5(password+user.getSalt());
+        if (!user.getPassword().equals(password))
+        {
+            map.put("passwordMsg","密码错误");
+            return map;
+        }
+
+        //到这里动没有出错，则表明可以成功登录
+        //生成登录凭证
+        LoginTicket ticket = new LoginTicket();
+        ticket.setTicket(CommunityUtil.generaterUUID());
+        ticket.setUserId(user.getId());
+        ticket.setStatus(0);//0表示登录有效，1表示登录无效
+        ticket.setExpired(new Date(System.currentTimeMillis()+expiredSeconds*1000));
+
+        //写入数据库
+        loginTicketMapper.insertTicket(ticket);
+
+        map.put("ticket",ticket.getTicket());
+
+        return map;
+    }
+
+    @Override
+    public void logOut(String ticket) {
+        int status = loginTicketMapper.updateStatus(ticket, 1);
+    }
 }

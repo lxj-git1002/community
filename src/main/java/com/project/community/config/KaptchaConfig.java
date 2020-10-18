@@ -26,7 +26,7 @@ public class KaptchaConfig {
         properties.setProperty("kaptcha.textproducer.font.color","red");
         //字体
         properties.setProperty("kaptcha.textproducer.font.name","Courier");
-        properties.setProperty("kaptcha.textproducer.char.string","ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890");
+        properties.setProperty("kaptcha.textproducer.char.string","ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890abcdefghijklmnopqrstuvwxyz");
         properties.setProperty("kaptcha.textproducer.char.length","4");
         //图片样式：
         properties.setProperty("kaptcha.obscurificator.impl","com.google.code.kaptcha.impl.ShadowGimpy");
