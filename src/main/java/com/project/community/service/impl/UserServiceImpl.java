@@ -207,4 +207,9 @@ public class UserServiceImpl implements UserService , CommunityConstant {
     public void logOut(String ticket) {
         int status = loginTicketMapper.updateStatus(ticket, 1);
     }
+
+    @Override
+    public LoginTicket findLoginTicket(String ticket) {
+        return loginTicketMapper.selectByTicket(ticket);
+    }
 }

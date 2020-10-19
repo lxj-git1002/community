@@ -1,5 +1,6 @@
 package com.project.community.service;
 
+import com.project.community.entity.LoginTicket;
 import com.project.community.entity.User;
 
 import java.util.Map;
@@ -16,4 +17,7 @@ public interface UserService  {
 
     //退出
     public void logOut(String ticket);
+
+    //查询loginticket对象
+    public LoginTicket findLoginTicket(String ticket);
 }

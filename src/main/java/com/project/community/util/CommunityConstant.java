@@ -14,5 +14,5 @@ public interface CommunityConstant {
     int ACTIVATION_REPEAT = 1;
     int ACTIVATION_FAILURE = 2;
     int DEFAULT_EXPIRED_SECONDS = 3600*5;//5 hours
-    int REMEMBER_EXPIRED_SECONDS = 3600*24*30; //1 month
+    int REMEMBER_EXPIRED_SECONDS = 3600*24*15; //1 month
 }
