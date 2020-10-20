@@ -13,9 +13,13 @@ public class GetCookieUtil {
             throw new IllegalArgumentException("参数为空");
         }
         Cookie[] cookies = request.getCookies();
-        for (Cookie c : cookies) {
-            if (c.getName().equals(name))
-                return c.getValue();
+
+        if (cookies!=null)
+        {
+            for (Cookie c : cookies) {
+                if (c.getName().equals(name))
+                    return c.getValue();
+            }
         }
         return null;
     }

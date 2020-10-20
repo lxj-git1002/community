@@ -20,4 +20,7 @@ public interface UserService  {
 
     //查询loginticket对象
     public LoginTicket findLoginTicket(String ticket);
+
+    //更新用户的头像
+    public int updateHeader(int userId, String headerUrl);
 }

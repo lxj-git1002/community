@@ -37,7 +37,7 @@ public class LoginController implements CommunityConstant {
     @Autowired
     private UserServiceImpl userService;
 
-    @Value("S{server.servlet.context-path}")
+    @Value("${server.servlet.context-path}")
     private String contextPath;
 
     //获取注册页面
