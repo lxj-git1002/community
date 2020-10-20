@@ -1,14 +1,15 @@
 package com.project.community.controller;
 
+import com.project.community.util.CommunityUtil;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+import java.util.*;
 
 @Controller
 @RequestMapping("/hello")
@@ -109,5 +110,51 @@ public class HelloTest {
         return res;
     }
 
+    //cookies示例
+    @RequestMapping(path = "/cookies/set",method = RequestMethod.GET)
+    @ResponseBody
+    public String setCookies(HttpServletResponse servletResponse)
+    {
+        //创建cookies对象
+        Cookie cookie = new Cookie("code", CommunityUtil.generaterUUID());
+
+        //设置生效范围（设置在哪些路径下才需要发送cookie）
+        cookie.setPath("/community/hello");
+
+        //cookie的生存时间（如果不设置，关闭浏览器cookie就会失效）
+        cookie.setMaxAge(60*10);//10 minutes
+
+        //发送cookie
+        servletResponse.addCookie(cookie);
+
+        return "set Cookies Success";
+    }
+
+    @RequestMapping(path = "/cookies/get",method = RequestMethod.GET)
+    @ResponseBody
+    public String getCookies(@CookieValue("code") String code)//将cookie中key为code的值赋值给code这个形参
+    {
+        System.out.println(code);
+        return "get cookies success";
+    }
+
+    //session 示例
+    @RequestMapping(path = "/session/set",method = RequestMethod.GET)
+    @ResponseBody
+    public String setSession(HttpSession session)//spring mvc 会自动创建session，并且注入进来
+    //session可以存很多的数据，可以存任何类型的数据。
+    {
+        session.setAttribute("id",1);
+        session.setAttribute("name","test");
+        return "set session success";
+    }
+    @RequestMapping(path = "/session/get",method = RequestMethod.GET)
+    @ResponseBody
+    public String getSession(HttpSession session)
+    {
+        System.out.println(session.getAttribute("id"));
+        System.out.println(session.getAttribute("name"));
+        return "get session success";
+    }
 
 }
