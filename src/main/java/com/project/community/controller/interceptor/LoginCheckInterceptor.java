@@ -1,9 +1,7 @@
 package com.project.community.controller.interceptor;
 
 import com.project.community.annotation.LoginCheck;
-import com.project.community.entity.User;
 import com.project.community.util.HostHolder;
-import org.apache.catalina.Host;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.method.HandlerMethod;
@@ -11,7 +9,6 @@ import org.springframework.web.servlet.HandlerInterceptor;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.lang.invoke.MethodHandle;
 import java.lang.reflect.Method;
 
 //这个拦截器用来处理logincheck注解的逻辑

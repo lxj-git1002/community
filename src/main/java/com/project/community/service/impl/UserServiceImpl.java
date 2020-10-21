@@ -8,6 +8,7 @@ import com.project.community.service.UserService;
 import com.project.community.util.CommunityConstant;
 import com.project.community.util.CommunityUtil;
 import com.project.community.util.MailClient;
+import com.sun.xml.internal.bind.annotation.OverrideAnnotationOf;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -221,5 +222,11 @@ public class UserServiceImpl implements UserService , CommunityConstant {
     @Override
     public int updatePwd(int userId, String newPwd) {
         return userMapper.updatePassword(userId,newPwd);
+    }
+
+    @Override
+    public User selectByemail(String email) {
+        User user = userMapper.selectByEmail(email);
+        return user;
     }
 }

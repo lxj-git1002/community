@@ -26,4 +26,7 @@ public interface UserService  {
 
     //更新用户的密码
     public int updatePwd(int userId,String newPwd);
+
+    //通过email查询用户
+    public User selectByemail(String email);
 }

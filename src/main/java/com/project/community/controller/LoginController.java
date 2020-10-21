@@ -1,9 +1,13 @@
 package com.project.community.controller;
 
 import com.google.code.kaptcha.Producer;
+import com.project.community.dao.UserMapper;
 import com.project.community.entity.User;
 import com.project.community.service.impl.UserServiceImpl;
 import com.project.community.util.CommunityConstant;
+import com.project.community.util.CommunityUtil;
+import com.project.community.util.EmailCheck;
+import com.project.community.util.MailClient;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,6 +37,9 @@ public class LoginController implements CommunityConstant {
     @Autowired
     //生成验证码
     private Producer kaptchaProducer;
+
+    @Autowired
+    private MailClient mailClient;
 
     @Autowired
     private UserServiceImpl userService;
@@ -176,6 +183,57 @@ public class LoginController implements CommunityConstant {
     {
         userService.logOut(ticket);
         return "redirect:/index";//退出后重定向到首页
+    }
+
+    //访问忘记密码页面
+    @RequestMapping(path = "/forget",method = RequestMethod.GET)
+    public String forgetPage()
+    {
+        return "/site/forget";
+    }
+
+    @RequestMapping(path = "/forget",method = RequestMethod.POST)
+    public String forget(String myEmail,String newPwd,String code,Model model)
+    {
+        if (StringUtils.isBlank(myEmail)|| !EmailCheck.isEmail(myEmail))
+        {
+            model.addAttribute("emailMsg","邮箱格式不正确");
+            return "/site/forget";
+        }
+
+        //检查邮箱是否已经注册
+        User user = userService.selectByemail(myEmail);
+        if (user==null)
+        {
+            model.addAttribute("emailMsg","邮箱没有注册");
+            return "/site/forget";
+        }
+
+        //生成一个验证码
+        String s = CommunityUtil.generaterUUID().substring(0,6);
+
+        //发送邮件
+        mailClient.sendMail(myEmail,"重置密码验证码",s);
+
+        if (code==null||code!=s)
+        {
+            model.addAttribute("codeMsg","验证码错误");
+            return "/site/forget";
+        }
+
+        if (newPwd==null||newPwd.length()<4)
+        {
+            model.addAttribute("passwordMsg","密码太短");
+            return "/site/forget";
+        }
+
+        //验证码正确,更新数据库密码，然后返回到登录界面
+        userService.updatePwd(user.getId(),CommunityUtil.MD5(newPwd+user.getSalt()));
+
+        //重新登陆
+        model.addAttribute("msg","密码找回，请重新登陆");
+        model.addAttribute("target","/login");
+        return "/site/operate-result";
     }
 
 }
