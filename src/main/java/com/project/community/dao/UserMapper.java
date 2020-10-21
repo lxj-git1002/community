@@ -25,5 +25,5 @@ public interface UserMapper {
     int updateHeader(int id,String headerUrl);
 
     //修改用户的status,根据id将原来的Password修改为新的Password，这里传入的是新的Password
-    int updatePassword(int id,String Password);
+    int updatePassword(int id,String password);
 }

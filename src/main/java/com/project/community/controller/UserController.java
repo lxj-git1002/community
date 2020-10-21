@@ -3,27 +3,24 @@ package com.project.community.controller;
 import com.project.community.entity.User;
 import com.project.community.service.UserService;
 import com.project.community.util.CommunityUtil;
+import com.project.community.util.GetCookieUtil;
 import com.project.community.util.HostHolder;
 import org.apache.commons.lang3.StringUtils;
-import org.mockito.internal.util.StringUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
-import org.springframework.stereotype.Repository;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.jws.WebParam;
-import javax.servlet.ServletOutputStream;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.OptionalDataException;
 import java.io.OutputStream;
 
 @Controller
@@ -47,7 +44,6 @@ public class UserController {
     @Autowired
     //持有用户的信息，代替session
     private HostHolder hostHolder;
-
     @RequestMapping(path = "/setting",method = RequestMethod.GET)
     public String getSettingPage()
     {
@@ -150,18 +146,42 @@ public class UserController {
     }
 
     @RequestMapping(path = "/alterpassword",method = RequestMethod.POST)
-    public String alterPassword(String oldPwd, String newPwd, String confirmPwd, Model model)
+    public String alterPassword(String oldPwd, String newPwd, String confirmPwd, Model model, HttpServletRequest request)
     {
-        if (StringUtils.isBlank(oldPwd)||StringUtils.isBlank(newPwd)||StringUtils.isBlank(confirmPwd))
-        {
-            model.addAttribute("passwordMsg","密码不能为空");
-            return "/site/setting";
-        }
-
         //如果不为空则，去当前用户的密码和输入的旧密码进行比较
         User user = hostHolder.getUser();
         String password = user.getPassword();
         String salt = user.getSalt();
-        return "aaa";
+        if (!password.equals(CommunityUtil.MD5(oldPwd + salt)))
+        {
+            model.addAttribute("oldpasswordMsg","原密码错误，请重新输入");
+            return "/site/setting";
+        }
+
+        if (newPwd.length()<4)
+        {
+            model.addAttribute("newpasswordMsg","密码太短，请重新输入");
+            return "/site/setting";
+        }
+
+        //输入的密码和数据库中的密码一样则判断输入的新密码和确认密码是否一致
+        if (!newPwd.equals(confirmPwd))
+        {
+            model.addAttribute("confirmpasswordMsg","密码不一致");
+            return "/site/setting";
+        }
+
+        //确认完毕后就需要修改数据库文件，然后退出当前用户，然后重定向到登录界面
+        newPwd = CommunityUtil.MD5(newPwd+salt);
+        userService.updatePwd(user.getId(),newPwd);
+
+        //退出当前用户
+        String ticket = GetCookieUtil.CookieValue(request, "ticket");
+        userService.logOut(ticket);
+
+        model.addAttribute("msg","修改成功，请重新登录");
+        model.addAttribute("target","/login");
+        return "/site/operate-result";
+
     }
 }

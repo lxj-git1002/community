@@ -56,7 +56,7 @@ public class MapperTest {
     @Test
     public void test3()
     {
-        int i = userMapper.updateStatus(1,1);
+        int i = userMapper.updatePassword(101,"111");
         User user = userMapper.selectById(i);
         System.out.println(user);
     }
