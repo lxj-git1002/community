@@ -15,17 +15,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.CookieValue;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.*;
 
 import javax.imageio.ImageIO;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.awt.image.BufferedImage;
+import java.io.BufferedReader;
+import java.io.IOException;
 import java.util.Map;
 
 @Controller
@@ -193,37 +193,23 @@ public class LoginController implements CommunityConstant {
     }
 
     @RequestMapping(path = "/forget",method = RequestMethod.POST)
-    public String forget(String myEmail,String newPwd,String code,Model model)
+    public String forget(String myEmail,String newPwd,String code,Model model,HttpSession session)
     {
-        if (StringUtils.isBlank(myEmail)|| !EmailCheck.isEmail(myEmail))
-        {
-            model.addAttribute("emailMsg","邮箱格式不正确");
-            return "/site/forget";
-        }
 
-        //检查邮箱是否已经注册
         User user = userService.selectByemail(myEmail);
-        if (user==null)
+
+        //从session中获得验证码
+        String ver = (String) session.getAttribute("ver");
+
+        if (code==null||ver==null||!code.equals(ver))
         {
-            model.addAttribute("emailMsg","邮箱没有注册");
-            return "/site/forget";
-        }
-
-        //生成一个验证码
-        String s = CommunityUtil.generaterUUID().substring(0,6);
-
-        //发送邮件
-        mailClient.sendMail(myEmail,"重置密码验证码",s);
-
-        if (code==null||code!=s)
-        {
-            model.addAttribute("codeMsg","验证码错误");
+            model.addAttribute("error","验证码错误");
             return "/site/forget";
         }
 
         if (newPwd==null||newPwd.length()<4)
         {
-            model.addAttribute("passwordMsg","密码太短");
+            model.addAttribute("error","密码太短");
             return "/site/forget";
         }
 
@@ -234,6 +220,32 @@ public class LoginController implements CommunityConstant {
         model.addAttribute("msg","密码找回，请重新登陆");
         model.addAttribute("target","/login");
         return "/site/operate-result";
+    }
+
+    //点击获取验证码，后得到user的邮箱。然后通过这个邮箱发送验证码
+    @RequestMapping(path = "/verification")
+    @ResponseBody
+    public String Verification(@RequestParam(name = "mail") String mail,HttpSession session,Model model)
+    {
+        if (StringUtils.isBlank(mail)|| !EmailCheck.isEmail(mail))
+        {
+            return "fail";
+        }
+
+        //检查邮箱是否已经注册
+        User user = userService.selectByemail(mail);
+
+        if (user==null)
+        {
+            return "fail";
+        }
+
+        //生成一个验证码
+        String s = CommunityUtil.generaterUUID().substring(0,6);
+        session.setAttribute("ver",s);
+        //发送邮件
+        mailClient.sendMail(mail,"重置密码验证码",s);
+        return "succ";
     }
 
 }
