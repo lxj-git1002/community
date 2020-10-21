@@ -67,8 +67,9 @@ community:
   path:
     domain: http://localhost:8088
 #    mac 上
-    upload: /Users/lxj/Program/java/project/community/I:/code/java/community/upload
+#    upload: /Users/lxj/Program/java/project/community/I:/code/java/community/upload
 #    win 上 修改upload
+    upload: I:/code/java/community/upload
 
 
 

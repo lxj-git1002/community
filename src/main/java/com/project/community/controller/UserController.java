@@ -18,10 +18,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.jws.WebParam;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.OptionalDataException;
 import java.io.OutputStream;
 
 @Controller
@@ -145,5 +147,21 @@ public class UserController {
         {
             LOGGER.error("读取头像失败"+e.getMessage());
         }
+    }
+
+    @RequestMapping(path = "/alterpassword",method = RequestMethod.POST)
+    public String alterPassword(String oldPwd, String newPwd, String confirmPwd, Model model)
+    {
+        if (StringUtils.isBlank(oldPwd)||StringUtils.isBlank(newPwd)||StringUtils.isBlank(confirmPwd))
+        {
+            model.addAttribute("passwordMsg","密码不能为空");
+            return "/site/setting";
+        }
+
+        //如果不为空则，去当前用户的密码和输入的旧密码进行比较
+        User user = hostHolder.getUser();
+        String password = user.getPassword();
+        String salt = user.getSalt();
+        return "aaa";
     }
 }
