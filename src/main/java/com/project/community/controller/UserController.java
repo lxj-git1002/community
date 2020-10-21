@@ -1,5 +1,6 @@
 package com.project.community.controller;
 
+import com.project.community.annotation.LoginCheck;
 import com.project.community.entity.User;
 import com.project.community.service.UserService;
 import com.project.community.util.CommunityUtil;
@@ -44,12 +45,17 @@ public class UserController {
     @Autowired
     //持有用户的信息，代替session
     private HostHolder hostHolder;
+
+    //setting这个路由只有在登录的时候才能访问
+    @LoginCheck
     @RequestMapping(path = "/setting",method = RequestMethod.GET)
     public String getSettingPage()
     {
         return "/site/setting";
     }
 
+    //upload这个路由只有在登录的时候才能访问
+    @LoginCheck
     //更新用户头像的请求
     @RequestMapping(path = "/upload",method = RequestMethod.POST)
     public String uploadHeader(MultipartFile headerImg, Model model)
@@ -109,6 +115,7 @@ public class UserController {
     * 然后浏览器会到这个路径下去加载图片。http:localhost:8088/community/user/header/图片 这个路径就会路由到当前的getHeader（）函数下
     * 然后完成图片的读取显示功能。
     * */
+    //就算不登陆也可以看到别人的头像，所以不用加自定义注解
     @RequestMapping(path = "/header/{filename}",method = RequestMethod.GET)
     public void getHeader(@PathVariable("filename") String filename, HttpServletResponse response)
     {
@@ -145,8 +152,11 @@ public class UserController {
         }
     }
 
+    //alterpassword这个路由只有在登录的时候才能访问
+    @LoginCheck
     @RequestMapping(path = "/alterpassword",method = RequestMethod.POST)
     public String alterPassword(String oldPwd, String newPwd, String confirmPwd, Model model, HttpServletRequest request)
+            //通过这个给request获得当前用户cookie，然后再修改密码成功后进行退出
     {
         //如果不为空则，去当前用户的密码和输入的旧密码进行比较
         User user = hostHolder.getUser();
