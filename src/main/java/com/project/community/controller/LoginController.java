@@ -192,48 +192,6 @@ public class LoginController implements CommunityConstant {
         return "/site/forget";
     }
 
-    @RequestMapping(path = "/forget",method = RequestMethod.POST)
-    public String forget(String myEmail,String newPwd,String code,Model model)
-    {
-        if (StringUtils.isBlank(myEmail)|| !EmailCheck.isEmail(myEmail))
-        {
-            model.addAttribute("emailMsg","邮箱格式不正确");
-            return "/site/forget";
-        }
 
-        //检查邮箱是否已经注册
-        User user = userService.selectByemail(myEmail);
-        if (user==null)
-        {
-            model.addAttribute("emailMsg","邮箱没有注册");
-            return "/site/forget";
-        }
-
-        //生成一个验证码
-        String s = CommunityUtil.generaterUUID().substring(0,6);
-
-        //发送邮件
-        mailClient.sendMail(myEmail,"重置密码验证码",s);
-
-        if (code==null||code!=s)
-        {
-            model.addAttribute("codeMsg","验证码错误");
-            return "/site/forget";
-        }
-
-        if (newPwd==null||newPwd.length()<4)
-        {
-            model.addAttribute("passwordMsg","密码太短");
-            return "/site/forget";
-        }
-
-        //验证码正确,更新数据库密码，然后返回到登录界面
-        userService.updatePwd(user.getId(),CommunityUtil.MD5(newPwd+user.getSalt()));
-
-        //重新登陆
-        model.addAttribute("msg","密码找回，请重新登陆");
-        model.addAttribute("target","/login");
-        return "/site/operate-result";
-    }
 
 }
