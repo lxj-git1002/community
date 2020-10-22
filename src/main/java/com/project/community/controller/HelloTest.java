@@ -157,4 +157,7 @@ public class HelloTest {
         return "get session success";
     }
 
+    //ajax例子
+    
+
 }
