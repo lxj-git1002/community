@@ -67,32 +67,33 @@
 					<div class="form-group row">
 						<label for="your-email" class="col-sm-2 col-form-label text-right">邮箱:</label>
 						<div class="col-sm-10">
-							<input type="email" th:class="|form-control ${emailMsg!=null?'is-invalid':''}|" id="your-email"
+							<input type="email"
+								   th:class="|form-control ${error!=null?'is-invalid':''}|"
+								   id="your-email"
 								   name="myEmail" placeholder="请输入您的邮箱!" required>
-							<div class="invalid-feedback" th:text="${emailMsg}">
-								该邮箱已被注册!
-							</div>
 						</div>
 					</div>
 					<div class="form-group row mt-4">
 						<label for="verifycode" class="col-sm-2 col-form-label text-right">验证码:</label>
 						<div class="col-sm-6">
-							<input type="text" th:class="|form-control ${codeMsg!=null?'is-invalid':''}|" name="code"
+							<input type="text" th:class="|form-control ${error!=null?'is-invalid':''}|" name="code"
 								   id="verifycode" placeholder="请输入验证码!">
-							<div class="invalid-feedback" th:text="${codeMsg}">
+							<div class="invalid-feedback" th:text="${error}">
 								验证码不正确!
 							</div>
+							<p class="buZai">验证码发送成功！</p>
 						</div>
+
 						<div class="col-sm-4">
-							<a href="javascript:;" class="btn btn-info form-control">获取验证码</a>
+							<a th:src="@{/verification}" id="validate_span" onclick="Verification(this)" class="btn btn-info form-control">获取验证码</a>
 						</div>
 					</div>	
 					<div class="form-group row mt-4">
 						<label for="your-password" class="col-sm-2 col-form-label text-right">新密码:</label>
 						<div class="col-sm-10">
-							<input type="password" th:class="|form-control ${passwordMsg!=null?'is-invalid':''}|" id="your-password"
+							<input type="password" th:class="|form-conrol ${error!=null?'is-invalid':''}|" id="your-password"
 								   name="newPwd" placeholder="请输入新的密码!" required>
-							<div class="invalid-feedback" th:text="${passwordMsg}">
+							<div class="invalid-feedback" th:text="${error}">
 								密码长度不能小于8位!
 							</div>							
 						</div>
@@ -169,9 +170,78 @@
 			</div>
 		</footer>
 	</div>
+	<style>
+		.tiShi{
+			color: deepskyblue;
+			font-size: 12px;
+		}
+		.buZai{
+			display: none;
+		}
+	</style>
 	<script src="https://code.jquery.com/jquery-3.3.1.min.js" crossorigin="anonymous"></script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" crossorigin="anonymous"></script>
 	<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" crossorigin="anonymous"></script>
 	<script th:src="@{/js/global.js}"></script>
+	<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+
+	<script>
+		var tiShi = document.querySelector('.buZai');
+
+
+		function Verification(e){
+
+			console.log('click');
+			var input= document.getElementById("your-email");
+			axios({
+				url: CONTEXT_PATH+"/verification",
+				method: 'post',
+				data: {
+					'mail': input.value
+				},
+				transformRequest: [function (data) {
+					// Do whatever you want to transform the data
+					let ret = ''
+					for (let it in data) {
+						ret += encodeURIComponent(it) + '=' + encodeURIComponent(data[it])
+					}
+					return ret
+				}],
+				headers: {
+					'Content-Type': 'application/x-www-form-urlencoded'
+				}
+			}).then(res => {
+				if(res.data === 'fail'){
+					alert("邮箱错误");
+				} else {
+					countdown(e);
+					tiShi.classList.remove('buZai');
+					tiShi.classList.add('tiShi');
+				}
+			})
+		}
+
+
+		var time = 60;
+
+		function countdown(e) {
+			if (time == 0) {
+				//e.setAttribute('disabled',false);         对没有disbaled属性的span标签，此方法无效
+				e.setAttribute("onclick", "Verification(t)");
+				$("#validate_span").html("获取验证码");
+				time = 10;
+			} else {
+				//e.attr('disabled',true);                  对没有disbaled属性的span标签，此方法也无效
+				//e.setAttribute("onclick", '');            这样写也可以
+				e.removeAttribute("onclick");
+				$("#validate_span").html("重新发送(" + time + ")");
+				time--;
+				setTimeout(function () {
+					countdown(e)
+				}, 1000)
+			}
+		}
+
+	</script>
 </body>
 </html>
