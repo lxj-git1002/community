@@ -2,19 +2,41 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>test</title>
+    <title>ajaxtest</title>
 </head>
 <body>
-<form method="post" action="/community/hello/test2">
     <p>
-        name:<input type="text" name="name">
+        <input type="button" value="send" onclick="send();">
     </p>
-    <p>
-        age:<input type="text" name="age">
-    </p>
-    <p>
-        <input type="submit" name="save">
-    </p>
-</form>
+<!--引入jquery-->
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js" crossorigin="anonymous"></script>
+    <script>
+        function send()
+        {
+            $.post(
+                //访问路径
+                "/community/hello/ajax",
+                //向服务器提交的数据
+                {
+                    "name":"lxj",
+                    "age":"100"
+                },
+                //回调函数 将服务器返回的数据传给这个方法
+                function (data)
+                {
+                    //data为字符串
+                    console.log(typeof (data));//string
+                    console.log(data);
+
+                    //将data转为json格式对象
+                    data = $.parseJSON(data);
+                    console.log(typeof (data));//object
+                    console.log(data.code);
+                    console.log(data.msg);
+                }
+
+            )
+        }
+    </script>
 </body>
 </html>

@@ -157,7 +157,18 @@ public class HelloTest {
         return "get session success";
     }
 
+    //ajax 异步js和xml，不是刷新整个页面，而只是返回网页改变的部分
     //ajax例子
-    
+    @RequestMapping(path = "/ajax",method = RequestMethod.POST)
+    //ajax实现异步请求，不向浏览器返回网页，只返回字符串。所以用responsebody注解
+    @ResponseBody
+    //post请求，浏览器向服务器提交数据，提交的数据写入参数中
+    public String ajaxTest(String name,int age)
+    {
+        System.out.println(name);
+        System.out.println(age);
+
+        return CommunityUtil.getJsonString(0,"success");
+    }
 
 }
