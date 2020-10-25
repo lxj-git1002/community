@@ -30,7 +30,7 @@
 							</li>
 <!--							如果没有登录则不显示消息。添加有一个if判断  loginuser是在拦截器中进行拦截看是否已经登录-->
 							<li class="nav-item ml-3 btn-group-vertical" th:if="${loginUser!=null}">
-								<a class="nav-link position-relative" href="site/letter.html">消息<span class="badge badge-danger">12</span></a>
+								<a class="nav-link position-relative" th:href="@{/letter/list}">消息<span class="badge badge-danger">12</span></a>
 							</li>
 <!--							如果登录了就不显示注册，如果没有登录才显示-->
 							<li class="nav-item ml-3 btn-group-vertical" th:if="${loginUser==null}">

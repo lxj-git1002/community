@@ -228,4 +228,9 @@ public class UserServiceImpl implements UserService , CommunityConstant {
         User user = userMapper.selectByEmail(email);
         return user;
     }
+
+    @Override
+    public User findUserByName(String username) {
+        return userMapper.selectByName(username);
+    }
 }
