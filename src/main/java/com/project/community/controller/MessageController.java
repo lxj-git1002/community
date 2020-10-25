@@ -7,7 +7,6 @@ import com.project.community.service.MessageService;
 import com.project.community.service.UserService;
 import com.project.community.util.CommunityUtil;
 import com.project.community.util.HostHolder;
-import com.sun.org.apache.xpath.internal.operations.Mod;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -93,6 +92,7 @@ public class MessageController {
     @RequestMapping(path = "/letter/detail/{conversationId}",method = RequestMethod.GET)
     public String letterDetail(@PathVariable("conversationId")String conversationId, Page page, Model model)
     {
+        //Integer.valueOf("abc");// 用于测试505错误
         //分页信息
         page.setLimit(2);
         page.setPath("/letter/detail/"+conversationId);

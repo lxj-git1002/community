@@ -49,4 +49,11 @@ public class HomeController {
         model.addAttribute("discussPosts", discussPosts);
         return "/index";
     }
+
+    //配置500页面的访问路径
+    @RequestMapping(path = "/error",method = RequestMethod.GET)
+    public String getErrorPage()
+    {
+        return "/error/500";
+    }
 }
