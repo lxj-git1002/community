@@ -136,6 +136,7 @@ public class MessageController {
     @ResponseBody //发送消息是异步发送，不用刷新整个页面
     public String sendLetter(String content,String toName)
     {
+        Integer.valueOf("abc");
         //得到通信对方
         User toUser = userService.findUserByName(toName);
         if (toUser==null)
