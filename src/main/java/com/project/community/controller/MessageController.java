@@ -38,6 +38,7 @@ public class MessageController {
      */
     @RequestMapping(path = "/letter/list", method = RequestMethod.GET)
     public String getLetterList(Model model, Page page) {
+
         User user = hostHolder.getUser();
 
         //设置分页信息
@@ -136,7 +137,8 @@ public class MessageController {
     @ResponseBody //发送消息是异步发送，不用刷新整个页面
     public String sendLetter(String content,String toName)
     {
-        Integer.valueOf("abc");
+       // Integer.valueOf("abd");
+
         //得到通信对方
         User toUser = userService.findUserByName(toName);
         if (toUser==null)
