@@ -192,6 +192,5 @@ public class UserController {
         model.addAttribute("msg","修改成功，请重新登录");
         model.addAttribute("target","/login");
         return "/site/operate-result";
-
     }
 }

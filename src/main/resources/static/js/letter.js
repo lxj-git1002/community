@@ -23,11 +23,11 @@ function send_letter() {
 			if (data.code==0)
 			{
 				//发送成功，从提示框提示
-				$("hintBody").text("发送成功");
+				$("#hintBody").text("发送成功");
 			}
 			else
 			{
-				$("hintBody").text(data.msg);
+				$("#hintBody").text(data.msg);
 			}
 
 			$("#hintModal").modal("show");
@@ -37,7 +37,7 @@ function send_letter() {
 			}, 2000);
 
 		}
-	)
+	);
 }
 
 function delete_msg() {
