@@ -50,6 +50,13 @@ spring:
             enable: true
             required: true
 
+#  配置redis
+  redis:
+    database: 1 #随便选择一个要使用的库
+    host: localhost
+    port: 6379
+
+
 
 
 #   MybatisProperties
