@@ -2,6 +2,7 @@ package com.project.community.controller;
 
 import com.project.community.annotation.LoginCheck;
 import com.project.community.entity.User;
+import com.project.community.service.LikeService;
 import com.project.community.service.UserService;
 import com.project.community.util.CommunityUtil;
 import com.project.community.util.GetCookieUtil;
@@ -16,6 +17,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
@@ -45,6 +47,9 @@ public class UserController {
     @Autowired
     //持有用户的信息，代替session
     private HostHolder hostHolder;
+
+    @Autowired
+    private LikeService likeService;
 
     //setting这个路由只有在登录的时候才能访问
     @LoginCheck
@@ -192,5 +197,26 @@ public class UserController {
         model.addAttribute("msg","修改成功，请重新登录");
         model.addAttribute("target","/login");
         return "/site/operate-result";
+    }
+
+    //访问个人主页
+    //同时也可以查看别人的个人主页
+    @RequestMapping(path = "/profile/{userId}",method = RequestMethod.GET)
+    public String getProfilePage(@PathVariable("userId") int userId,Model model)
+    {
+        //得到要查看的用户
+        User user = userService.findUserById(userId);
+        if (user==null)
+        {
+            throw new IllegalArgumentException("用户不存在");
+        }
+
+        //查询用户相关数据
+        model.addAttribute("user",user);
+        //查询当前用户收到的赞的数量
+        int num = likeService.findUserLikeNum(user.getId());
+        model.addAttribute("likeCount",num);
+
+        return "/site/profile";
     }
 }

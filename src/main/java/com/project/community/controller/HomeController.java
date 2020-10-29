@@ -4,7 +4,9 @@ import com.project.community.entity.DiscussPost;
 import com.project.community.entity.Page;
 import com.project.community.entity.User;
 import com.project.community.service.DiscussPostService;
+import com.project.community.service.LikeService;
 import com.project.community.service.UserService;
+import com.project.community.util.CommunityConstant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -17,13 +19,15 @@ import java.util.List;
 import java.util.Map;
 
 @Controller
-public class HomeController {
+public class HomeController implements CommunityConstant {
 
     //显示查询到的帖子，并且需要将帖子数据库中的userid转成username，所以也需要用户表的操作
     @Autowired
     private DiscussPostService discussPostService;
     @Autowired
     private UserService userService;
+    @Autowired
+    private LikeService likeService;
 
     @RequestMapping(path = "/index",method = RequestMethod.GET)//访问首页，并且访问方式为get
     public String getIndexPage(Model model,Page page)//返回的是视图的名称
@@ -43,6 +47,12 @@ public class HomeController {
                 map.put("post", post);
                 User user = userService.findUserById(post.getUserId());
                 map.put("user", user);
+
+                //查询当前帖子有多少赞
+                long num = likeService.findEntityLikeNum(ENTITY_TYPE_POST, post.getId());
+                //装入map中
+                map.put("likeCount",num);
+
                 discussPosts.add(map);
             }
         }
