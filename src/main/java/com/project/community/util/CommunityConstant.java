@@ -10,6 +10,7 @@ public interface CommunityConstant {
     * 5 记住状态登录超时时间
     * 6 实体类型 帖子1
     * 7 实体类型 评论2
+    * 8 实体类型 人3
     * */
 
     int ACTIVATION_SUCCESS = 0;
@@ -19,4 +20,5 @@ public interface CommunityConstant {
     int REMEMBER_EXPIRED_SECONDS = 3600*24*15; //1 month
     int ENTITY_TYPE_POST = 1;
     int ENTITY_TYPE_COMMENT = 2;
+    int ENTITY_TYPE_USER = 3;
 }

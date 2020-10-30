@@ -5,6 +5,8 @@ public class RedisKeyUtil {
     private static final String SPLIT = ":";
     private static final String PREFIX_ENTITY_LIKE = "like:entity";
     private static final String PREFIX_USER = "like:user";
+    private static final String PREFIX_FOLLOWEE = "followee";//A 关注了 B，则followee就是在A中记录B
+    private static final String PREFIX_FOLLOWER = "follower";//A 关注了 B，则follower就是在B中记录我被关注的数量，即就是用于统计B的粉丝数量。用于在主页显示
 
     //生成某个实体对象的👍
     //所以：
@@ -31,4 +33,23 @@ public class RedisKeyUtil {
          return PREFIX_USER+SPLIT+userId;
      }
 
+     // A关注了B（B可以是一个帖子也可以是一个用户）
+    // key：
+    // followee：userid（A）：entityType（关注的物体的类型）
+    // value：
+    // zset（entityId（B），关注的时间作为分数）
+    public static String getFolloweeKey(int userId,int entityType)
+    {
+        return PREFIX_FOLLOWEE+SPLIT+userId+SPLIT+entityType;
+    }
+
+    //B被关注，则B的粉丝数量
+    //key：
+    //follower：entityType：entityId
+    //value：
+    //zset（userid，分数为被关注的时间）
+    public static String getFollowerKey(int entityType,int entityId)
+    {
+        return PREFIX_FOLLOWER+SPLIT+entityType+SPLIT+entityId;
+    }
 }

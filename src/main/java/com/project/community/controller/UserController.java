@@ -2,8 +2,10 @@ package com.project.community.controller;
 
 import com.project.community.annotation.LoginCheck;
 import com.project.community.entity.User;
+import com.project.community.service.FollowService;
 import com.project.community.service.LikeService;
 import com.project.community.service.UserService;
+import com.project.community.util.CommunityConstant;
 import com.project.community.util.CommunityUtil;
 import com.project.community.util.GetCookieUtil;
 import com.project.community.util.HostHolder;
@@ -28,7 +30,7 @@ import java.io.OutputStream;
 
 @Controller
 @RequestMapping(path = "/user")
-public class UserController {
+public class UserController implements CommunityConstant {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(UserController.class);
 
@@ -50,6 +52,9 @@ public class UserController {
 
     @Autowired
     private LikeService likeService;
+
+    @Autowired
+    private FollowService followService;
 
     //setting这个路由只有在登录的时候才能访问
     @LoginCheck
@@ -217,6 +222,25 @@ public class UserController {
         int num = likeService.findUserLikeNum(user.getId());
         model.addAttribute("likeCount",num);
 
+        //关注数量
+        long followeeNum = followService.findFolloweeNum(userId, ENTITY_TYPE_USER);
+        model.addAttribute("followeeCount",followeeNum);
+
+        //粉丝数量（被关注的数量）
+        long followerNum = followService.findFollowerNum(ENTITY_TYPE_USER, userId);
+        model.addAttribute("followerCount",followerNum);
+
+        //是否已经关注
+        boolean hasFollow =false;
+        if (hostHolder.getUser()!=null)
+        {
+            //登录状态下才会有关注
+            hasFollow = followService.hasFollow(hostHolder.getUser().getId(),ENTITY_TYPE_USER,userId);
+        }
+        model.addAttribute("hasFollow",hasFollow);
+
         return "/site/profile";
     }
+
+    //
 }
