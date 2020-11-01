@@ -7,6 +7,9 @@ public class RedisKeyUtil {
     private static final String PREFIX_USER = "like:user";
     private static final String PREFIX_FOLLOWEE = "followee";//A 关注了 B，则followee就是在A中记录B
     private static final String PREFIX_FOLLOWER = "follower";//A 关注了 B，则follower就是在B中记录我被关注的数量，即就是用于统计B的粉丝数量。用于在主页显示
+    private static final String PREFIX_KAPTCHA = "kaptcha"; //用redis存储验证码
+    private static final String PREFIX_TICKET = "ticket"; //用redis存储登录凭证
+    private static final String PREFIX_USERCATCH = "usercatch";
 
     //生成某个实体对象的👍
     //所以：
@@ -51,5 +54,23 @@ public class RedisKeyUtil {
     public static String getFollowerKey(int entityType,int entityId)
     {
         return PREFIX_FOLLOWER+SPLIT+entityType+SPLIT+entityId;
+    }
+
+    //生成登录验证码的key
+    public static String getKaptchaKey(String owner)
+    {
+        return PREFIX_KAPTCHA+SPLIT+owner;
+    }
+
+    //生成登录凭证的key
+    public static String getTicketKey(String ticket)
+    {
+        return PREFIX_TICKET+SPLIT+ticket;
+    }
+
+    //生成缓存 key
+    public static String getUserCatchKey(int userId)
+    {
+        return PREFIX_USERCATCH+SPLIT+userId;
     }
 }

@@ -1,6 +1,5 @@
 package com.project.community.service.impl;
 
-import com.project.community.dao.LoginTicketMapper;
 import com.project.community.dao.UserMapper;
 import com.project.community.entity.LoginTicket;
 import com.project.community.entity.User;
@@ -8,9 +7,11 @@ import com.project.community.service.UserService;
 import com.project.community.util.CommunityConstant;
 import com.project.community.util.CommunityUtil;
 import com.project.community.util.MailClient;
+import com.project.community.util.RedisKeyUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
@@ -19,6 +20,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
+import java.util.concurrent.TimeUnit;
 
 @Service
 public class UserServiceImpl implements UserService , CommunityConstant {
@@ -35,7 +37,10 @@ public class UserServiceImpl implements UserService , CommunityConstant {
     private UserMapper userMapper;
 
     @Autowired
-    private LoginTicketMapper loginTicketMapper;
+    private RedisTemplate<String,Object> template;
+
+//    @Autowired
+//    private LoginTicketMapper loginTicketMapper;
 
     //注册的时候发邮件要生成一个激活码，激活码中要包含域名以及项目名。
     //注入
@@ -46,7 +51,14 @@ public class UserServiceImpl implements UserService , CommunityConstant {
 
     @Override
     public User findUserById(int id) {
-        return userMapper.selectById(id);
+//        return userMapper.selectById(id);
+        //查询用户先从catch，然后如果失败则初始化缓存，然后返回值
+        User user = getCatch(id);
+        if (user==null)
+        {
+            user = initCatch(id);
+        }
+        return user;
     }
 
     @Override
@@ -137,6 +149,9 @@ public class UserServiceImpl implements UserService , CommunityConstant {
         {
             //修改用户的激活状态
             userMapper.updateStatus(userId,1);
+
+            //修改了用户信息，则清除缓存
+            deleteCatch(userId);
             return ACTIVATION_SUCCESS;
         }
 
@@ -194,8 +209,14 @@ public class UserServiceImpl implements UserService , CommunityConstant {
         ticket.setStatus(0);//0表示登录有效，1表示登录无效
         ticket.setExpired(new Date(System.currentTimeMillis()+expiredSeconds*1000));
 
-        //写入数据库
-        loginTicketMapper.insertTicket(ticket);
+//        //写入数据库
+//        loginTicketMapper.insertTicket(ticket);
+
+        //不将ticket存入到mysql，而是存入到redis中
+        //生成redis的key
+        String key = RedisKeyUtil.getTicketKey(ticket.getTicket());
+        //存入redis中
+        template.opsForValue().set(key,ticket);//ticket是一个对象，redis会将对象序列化为一个json字符串
 
         map.put("ticket",ticket.getTicket());
 
@@ -204,23 +225,41 @@ public class UserServiceImpl implements UserService , CommunityConstant {
 
     @Override
     public void logOut(String ticket) {
-        int status = loginTicketMapper.updateStatus(ticket, 1);
+//        int status = loginTicketMapper.updateStatus(ticket, 1);
+        //生成redis的key
+        String key = RedisKeyUtil.getTicketKey(ticket);
+        //从redis中取出对应的对象
+        LoginTicket loginTicket = (LoginTicket) template.opsForValue().get(key);
+        //将状态设置为1
+        loginTicket.setStatus(1);
+        //然后在存入到redis中
+        template.opsForValue().set(key,loginTicket);
     }
 
     @Override
     public LoginTicket findLoginTicket(String ticket) {
-        return loginTicketMapper.selectByTicket(ticket);
+//        return loginTicketMapper.selectByTicket(ticket);
+        //生成redis的key
+        String key = RedisKeyUtil.getTicketKey(ticket);
+        LoginTicket loginTicket = (LoginTicket) template.opsForValue().get(key);
+
+        return loginTicket;
     }
 
     @Override
     public int updateHeader(int userId, String headerUrl) {
         int i = userMapper.updateHeader(userId, headerUrl);
+        //user信息被修改，则清除缓存
+        deleteCatch(userId);
         return i;
     }
 
     @Override
     public int updatePwd(int userId, String newPwd) {
-        return userMapper.updatePassword(userId,newPwd);
+        int i = userMapper.updatePassword(userId, newPwd);
+        //user信息被修改，则清除缓存
+        deleteCatch(userId);
+        return i;
     }
 
     @Override
@@ -232,5 +271,35 @@ public class UserServiceImpl implements UserService , CommunityConstant {
     @Override
     public User findUserByName(String username) {
         return userMapper.selectByName(username);
+    }
+
+    //通过redis 对user 信息的缓存
+    //1当查询是优先到缓存中取，如果取到直接返回
+    private User getCatch(int userId)
+    {
+        //生成redis key
+        String key = RedisKeyUtil.getUserCatchKey(userId);
+        User user = (User) template.opsForValue().get(key);
+        return user;
+    }
+
+    //2如果取不到就初始化缓存数据
+    private User initCatch(int userId)
+    {
+        //从mysql中得到对应的user数据
+        User user = userMapper.selectById(userId);
+
+        //生成redis key
+        String key = RedisKeyUtil.getUserCatchKey(userId);
+        template.opsForValue().set(key,user,3600, TimeUnit.SECONDS);//缓存的有效时间为一个小时 3600秒
+        return user;
+    }
+
+    //3当user数据变更时，删除缓存中的数据
+    private void deleteCatch(int userId)
+    {
+        //生成redis key
+        String key = RedisKeyUtil.getUserCatchKey(userId);
+        template.delete(key);
     }
 }

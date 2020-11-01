@@ -4,6 +4,8 @@ import com.project.community.entity.LoginTicket;
 import org.apache.ibatis.annotations.*;
 
 @Mapper
+@Deprecated
+//将ticket存入到redis中，则不推荐使用
 public interface LoginTicketMapper {
 
     //登录成功给数据表中插入ticket凭证
