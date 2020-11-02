@@ -1,8 +1,10 @@
 package com.project.community.controller;
 
 import com.project.community.annotation.LoginCheck;
+import com.project.community.entity.Event;
 import com.project.community.entity.Page;
 import com.project.community.entity.User;
+import com.project.community.event.EventProducer;
 import com.project.community.service.FollowService;
 import com.project.community.service.UserService;
 import com.project.community.util.CommunityConstant;
@@ -16,7 +18,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import java.nio.file.Path;
 import java.util.List;
 import java.util.Map;
 
@@ -32,6 +33,10 @@ public class FollowController implements CommunityConstant {
     @Autowired
     private UserService userService;
 
+    //用于产生事件
+    @Autowired
+    private EventProducer producer;
+
     //只能登录后关注东西
     @LoginCheck
     //添加关注，用异步请求
@@ -41,6 +46,16 @@ public class FollowController implements CommunityConstant {
     {
         User user = hostHolder.getUser();
         followService.follow(user.getId(),entityType,entityId);
+
+        //在关注之后系统发送消息
+        Event event = new Event()
+                .setTopic(TOPIC_FOLLOW)
+                .setUserId(hostHolder.getUser().getId())
+                .setEntityType(entityType)
+                .setEntityId(entityId)
+                .setEntityUserId(entityId);
+
+        producer.fireEvent(event);
 
         return CommunityUtil.getJsonString(0,"已关注");
     }

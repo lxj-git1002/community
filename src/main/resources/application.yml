@@ -56,6 +56,15 @@ spring:
     host: localhost
     port: 6379
 
+#    配置kafka
+  kafka:
+    bootstrap-servers: localhost:9092
+    consumer:
+      group-id: community-consumer-group
+#      是否自动提交消费者的偏移量
+      enable-auto-commit: true
+#      自动提交频率 3s
+      auto-commit-interval: 3000
 
 
 
@@ -74,9 +83,9 @@ community:
   path:
     domain: http://localhost:8088
 #    mac 上
-#    upload: /Users/lxj/Program/java/project/community/I:/code/java/community/upload
+    upload: /Users/lxj/Program/java/project/community/I:/code/java/community/upload
 #    win 上 修改upload
-    upload: I:/code/java/community/upload
+#    upload: I:/code/java/community/upload
 
 
 

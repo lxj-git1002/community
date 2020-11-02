@@ -1,4 +1,4 @@
-function like(button,entityType,entityId,entityUserId)
+function like(button,entityType,entityId,entityUserId,postId)
 {
     $.post(
         //路径
@@ -6,7 +6,8 @@ function like(button,entityType,entityId,entityUserId)
         {
             "entityType":entityType,
             "entityId":entityId,
-            "entityUserId":entityUserId
+            "entityUserId":entityUserId,
+            "postId":postId
         },
         function (data)
         {

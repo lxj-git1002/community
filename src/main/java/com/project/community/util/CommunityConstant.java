@@ -11,6 +11,10 @@ public interface CommunityConstant {
     * 6 实体类型 帖子1
     * 7 实体类型 评论2
     * 8 实体类型 人3
+    * 9 kafka主题 评论
+    * 10 kafka主题 点赞
+    * 11 kafka主题 关注
+    * 12 系统用户id 为1
     * */
 
     int ACTIVATION_SUCCESS = 0;
@@ -21,4 +25,9 @@ public interface CommunityConstant {
     int ENTITY_TYPE_POST = 1;
     int ENTITY_TYPE_COMMENT = 2;
     int ENTITY_TYPE_USER = 3;
+    String TOPIC_COMMENT = "comment";
+    String TOPIC_LIKE = "like";
+    String TOPIC_FOLLOW = "follow";
+    int SYSTEM_USER_ID = 1;
+
 }

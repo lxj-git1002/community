@@ -12,4 +12,7 @@ public interface CommentService {
 
     //增加评论
     public int addComment(Comment comment);
+
+    //查询发布评论的用户
+    public Comment findCommentById(int id);
 }
