@@ -19,4 +19,12 @@ public interface MessageService {
     public int addMessage(Message message);
 
     public int alterMessageStatus(List<Integer> ids,int status);
+
+    public Message findLatestNotice(int userId,String topic);
+
+    public int findNoticeCount(int userId,String topic);
+
+    public int findUnreadNoticeCount(int userId,String topic);
+
+    public List<Message> findNotices(int userId,String topic,int offset,int limit);
 }

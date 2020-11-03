@@ -2,6 +2,7 @@ package com.project.community.config;
 
 import com.project.community.controller.interceptor.LoginCheckInterceptor;
 import com.project.community.controller.interceptor.LoginTicketInterceptor;
+import com.project.community.controller.interceptor.MessageInterceptor;
 import com.project.community.controller.interceptor.TestInterceptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
@@ -23,6 +24,9 @@ public class WebMVCConfig implements WebMvcConfigurer {
     @Autowired
     private LoginCheckInterceptor loginCheckInterceptor;
 
+    @Autowired
+    private MessageInterceptor messageInterceptor;
+
     //实现这个方法对拦截器方法进行配置
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
@@ -38,6 +42,9 @@ public class WebMVCConfig implements WebMvcConfigurer {
                 .excludePathPatterns("/**/*.css","/**/*.js","/**/*.png","/**/*.jpg","/**/*.jpeg");//拦截所有路径
 
         registry.addInterceptor(loginCheckInterceptor)
+                .excludePathPatterns("/**/*.css","/**/*.js","/**/*.png","/**/*.jpg","/**/*.jpeg");
+
+        registry.addInterceptor(messageInterceptor)
                 .excludePathPatterns("/**/*.css","/**/*.js","/**/*.png","/**/*.jpg","/**/*.jpeg");
 
     }

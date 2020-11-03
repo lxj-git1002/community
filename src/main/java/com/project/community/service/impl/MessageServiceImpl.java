@@ -4,6 +4,7 @@ import com.project.community.dao.MessageMapper;
 import com.project.community.entity.Message;
 import com.project.community.service.MessageService;
 import com.project.community.util.SensitiveFilter;
+import jdk.nashorn.internal.runtime.regexp.joni.constants.TargetInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.util.HtmlUtils;
@@ -57,5 +58,26 @@ public class MessageServiceImpl implements MessageService {
     @Override
     public int alterMessageStatus(List<Integer> ids, int status) {
         return messageMapper.updateMessageStatus(ids, status);
+    }
+
+
+    @Override
+    public Message findLatestNotice(int userId, String topic) {
+        return messageMapper.selectLatestNotice(userId, topic);
+    }
+
+    @Override
+    public int findNoticeCount(int userId, String topic) {
+        return messageMapper.selectNoticeNum(userId,topic);
+    }
+
+    @Override
+    public int findUnreadNoticeCount(int userId, String topic) {
+        return messageMapper.selectNoticeUnreadNum(userId,topic);
+    }
+
+    @Override
+    public List<Message> findNotices(int userId, String topic, int offset, int limit) {
+        return messageMapper.selectNotices(userId,topic,offset,limit);
     }
 }
