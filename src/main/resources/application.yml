@@ -67,6 +67,16 @@ spring:
       auto-commit-interval: 3000
 
 
+#      配置elasticsearch的集群名称和集群节点
+     #tcp 访问的接口是9300 http访问的接口是9200
+  data:
+    elasticsearch:
+      cluster-nodes: localhost:9300
+      cluster-name: myES
+
+  main:
+    allow-bean-definition-overriding: true
+
 
 #   MybatisProperties
 mybatis:
